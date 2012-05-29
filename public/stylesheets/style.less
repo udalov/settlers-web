@@ -1,0 +1,100 @@
+.box-shadow (@x: 0, @y: 0, @blur: 1px, @alpha) {
+  @val: @x @y @blur rgba(0, 0, 0, @alpha);
+
+  box-shadow:         @val;
+  -webkit-box-shadow: @val;
+  -moz-box-shadow:    @val;
+}
+
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: url('/images/cardboard.png');
+  margin: 0px auto;
+  padding: 50px;
+  width: 950px;
+
+  a {
+    &:hover {
+      color: #00B7FF;
+    }
+  }
+
+  .clear {
+    clear: both;
+  }
+
+  #main {
+    .box-shadow(0, 0, 8px, 0.4);
+    background: #fff;
+    padding: 1em;
+
+    #header {
+      text-align: center;
+      #menu {
+        list-style: none;
+        li {
+          float: left;
+          padding-right: 2em;
+          a {
+            display: block;
+            text-decoration: none;
+          }
+        }
+      }
+    }
+
+    #content {
+      img {
+        margin: 2ex auto;
+      }
+      padding: 1em 1em;
+      line-height: 1.5;
+
+      .classes-table {
+        border: 1px solid #ccc;
+        margin: 1em;
+        tr:nth-child(odd) { background-color: #f3f3ff; }
+        td { padding: 2px 1em 2px 1ex; }
+      }
+
+      .contents {
+        background-color: #efe;
+        border: 2px solid #afa;
+        float: right;
+        padding-left: 1em;
+        padding-right: 1em;
+        h4 { margin: 1em auto 0 auto; }
+        ul {
+          display: inline;
+          list-style-type: none;
+        }
+      }
+
+      .api {
+        white-space: pre;
+        font-family: menlo, monaco, courier new;
+        border: 2px solid #aaf;
+        background-color: #eef;
+        margin: 1em;
+        padding: 1ex 1em;
+        .togglecmnts {
+          float: right;
+          font-family: tahoma;
+          a {
+            cursor: pointer;
+            text-decoration: none; 
+          }
+        }
+        .cmnt {
+          &::before { content: '// '; }
+          color: #77f;
+          display: none;
+          word-wrap: break-word;
+        }
+      }
+    }
+
+
+  }
+}
+

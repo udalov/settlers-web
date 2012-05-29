@@ -1,0 +1,335 @@
+#main
+  #header
+    include inc/header
+  #content
+    h2 Documentation
+    hr
+
+
+    .contents
+      h4 Contents
+      ul
+        li: a(href='#about')  What's this about?
+        li: a(href='#overview') System overview
+        li: a(href='#aux') Auxiliary concepts
+        li: a(href='#interface') Bot interface
+        li: a(href='#lifespan') Bot lifespan
+        li: a(href='#board') Board structure
+        li: a(href='#board-static-api') Board static API
+        li: a(href='#board-api') Board non-static API
+        li: a(href='#api') Game API
+        li: a(href='#maketurn') makeTurn
+        li: a(href='#usage') Testing system usage
+
+    a(name='about')
+    h3 What's this about?
+    | Your goal in this tournament is to implement a bot which would beat others in the game Settlers of Catan for 3-4 players (<a href='http://www.catan.com/en/download/?SoC_rv_Rules_091907.pdf'><b>official rules of the game</b></a>).<br/>
+    | You can implement your bot in any JVM-compiled language, e.g. <b>Java</b>. A visualizer and a testing system are provided to help you design and debug your bot.<br/>
+    br
+
+
+    a(name='overview')
+    h3 System overview
+    | To get started, download the latest Settlers.jar from the <a href='download'>download</a> page. Start a project in your IDE of choice and add the library to your classpath.<br/>
+    br
+    | Packages you'll use:<br/>
+    ul
+      li <code>settlers</code>&nbsp;&nbsp;contains game objects and structures
+      li <code>settlers.bot</code>&nbsp;&nbsp;contains a bot interface and several simple examples of bots
+      li <code>settlers.util</code>&nbsp;&nbsp;contains various useful classes &amp; methods
+    | A brief introduction into classes in <code>settlers</code> package:<br/>
+    table.classes-table
+      tbody
+        tr
+          td: code Game
+          td Stores everything about the current state of the game and allows to make game actions. All actions are done through a proxy object <code>Game.API</code>
+        tr
+          td: code Board
+          td Represents a board, generated for the game. Resources, numbers and harbors only, no info about players' buildings
+        tr
+          td <code>Hex</code>,&nbsp;<code>Edge</code>,&nbsp;<code>Node</code>
+          td Board objects (see below)
+        tr
+          td: code Main
+          td Is used to run the application
+        tr
+          td: code Player
+          td Represents a player
+        tr
+          td: code Resource
+          td Enum, one of 5 game resources: <code>BRICK</code>, <code>WOOL</code>, <code>ORE</code>, <code>GRAIN</code>, <code>LUMBER</code>
+        tr
+          td: code ResourceDeck
+          td A deck of resource cards, possessed by a player
+        tr
+          td: code Development
+          td Enum, one of 5 development card types: <code>KNIGHT</code>, <code>ROAD_BUILDING</code>, <code>INVENTION</code>, <code>MONOPOLY</code>, <code>VICTORY_POINT</code>
+        tr
+          td: code DevelopmentDeck
+          td A deck of development cards, possessed by a player
+        tr
+          td: code Town
+          td Represents either a settlement or a city, built by a player
+        tr
+          td: code Harbor
+          td Represents a harbor that may be built to exchange resources on better rates. Contains a single reference to a <code>Resource</code> which can be changed 2:1 (null means it's 3:1 harbor)
+        tr
+          td: code TradeOffer
+          td A trade offer, consists of a player who proposed the trade and what resources does he buy/sell
+        tr
+          td: code TradeResult
+          td Is used to accept an offer proposed by anyone and conduct the trade, or decline it
+        tr
+          td <code>Event</code>,&nbsp;<code>EventType</code>
+          td Represents any public action of any player
+        tr
+          td: code History
+          td Stores all public events during a game
+        tr
+          td: code GameException
+          td An exception which means you're doing something wrong in your algo
+    br
+
+
+    a(name='aux')
+    h3 Auxiliary concepts
+    ul
+      li <b>pair</b> &mdash; a simple generic class (<code>settlers.util.Pair</code>), a heterogeneous immutable collection of two elements. Use <code>first()</code> and <code>second()</code> member methods to retrieve contained elements. Use <code>Pair.make</code> static generic method to construct a pair from any two elements
+      li <b>resource string</b> &mdash; a compact representation of a set of resources; a string consisting of characters from the set [<code>BWOGL</code>], where each character represents a corresponding resource. The order of characters inside the string doesn't matter. E.g. <code>"BWGLBL"</code> means 2 brick, 2 lumber, 1 wool and 1 grain. Is used in resource exchange and trade
+    br
+
+
+    a(name='interface')
+    h3 Bot interface
+    .api.
+      abstract class Bot {
+        abstract Pair&lt;Node, Edge&gt; placeInitialSettlements(boolean first)
+        abstract void makeTurn()
+        abstract TradeResult trade(TradeOffer offer)
+        abstract List&lt;Resource&gt; discardHalfOfTheCards()
+      }
+    | This is precisely the interface you need to implement. Derive your class from <code>Bot</code> and implement these methods:<br/>
+    ul
+      li <code>placeInitialSettlements</code> &mdash; is called two times (with <code>true</code> and <code>false</code> as the parameter value respectively) before the game to let you place your first and second settlements and roads. You must return a pair of a node and an edge adjacent to it
+      li <code>makeTurn</code> &mdash; is called when it's your time to make a turn. All your essential logic should be placed here
+      li <code>trade</code> &mdash; is called when another player proposes a trade. You must return whether you're accepting or rejecting his offer, or propose a counteroffer. Keep in mind that even though you may accept the offer, it might be not finalized because the proposing player decides to trade with another player who had accepted it
+      li <code>discardHalfOfTheCards</code> &mdash; is called when you have more than 7 resource cards and any player (including you) rolls 7. You must return a list of cards that you're discarding
+    br
+
+
+    a(name='lifespan')
+    h3 Bot lifespan
+    | A bot is created and a <code>Game.API</code> object is passed to it. Then <code>placeInitialSettlements</code> is called twice (the order of players building their initial settlements is as in the original game, forth and back, starting from a random player). Then on every turn of your player, <code>makeTurn</code> is called. Occasionally <code>trade</code> and <code>discardHalfOfTheCards</code> may be called too. You can store results of any intermediate calculations inside your Bot class.<br/>
+    | Your class <b>must have</b> a constructor, which takes <b>a single <code>Game.API</code> argument</b>, say, <code>api</code>. You may call <code>super(api)</code> inside this constructor. Please <b>don't call any API methods in your constructor</b>, because as the info may be incomplete during the creation of players, you might get wrong or inconsistent results.<br/>
+    | Also override <code>toString</code> method to return a chosen name of your bot to be displayed in visualizer and scoreboards.<br/>
+    br
+
+
+    a(name='board')
+    h3 Board structure
+    | A board consists of 19 Hexes, 54 Edges and 72 Nodes (intersections).<br/>
+    img(src='/images/board.png',width='50%',alt='Sample game board')
+    br
+    | A <b>Hex</b> is represented by x and y coordinates which conform to the picture above.<br/>
+    | An <b>Edge</b> is represented by a hex object and an index (0..5) of a side of the corresponding hex. Note that there may be 1 or 2 possible representations.<br/>
+    | A <b>Node</b> is represented by a hex object and an index (0..5) of a vertex of the corresponding hex. Note that there may be 1, 2 or 3 possible representations.<br/>
+    br
+    | See the picture below for indices of directions for edges (dark green) &amp; nodes (blue).<br/>
+    img(src='/images/hex-directions.png',alt="Edges' and Nodes' directions")
+    br
+    | Hence, for example, edge(hex(2,&nbsp;0),&nbsp;1) is the same as edge(hex(1,&nbsp;1),&nbsp;4). Similarly, node(hex(4,&nbsp;0),&nbsp;5) is the same as node(hex(6,&nbsp;0),&nbsp;3).<br/>
+    br
+
+
+    a(name='board-static-api')
+    h3 Board static API
+    | Use these methods of <code>Board</code> class to get a specific hex/edge/node:<br/>
+    .api.
+      static Hex hex(int x, int y)
+      static Edge edge(Hex hex, int direction)
+      static Node node(Hex hex, int direction)
+    | Use these methods to get all of the objects:<br/>
+    .api.
+      static List&lt;Hex&gt; allHexes()
+      static List&lt;Edge&gt; allEdges()
+      static List&lt;Node&gt; allNodes()
+    | These might be very useful in the beginning, since you may often find yourself doing stuff like "sort all positions according to some sensible comparing order and choose the best".<br/>
+    | A bunch of other convenience methods you may find useful:
+    .api.
+      static List&lt;Hex&gt; adjacentHexes(Node x)
+      static List&lt;Hex&gt; adjacentHexes(Hex c)
+      static List&lt;Edge&gt; adjacentEdges(Node x)
+      static List&lt;Edge&gt; adjacentEdges(Edge e)
+      static List&lt;Node&gt; adjacentNodes(Node x)
+      static List&lt;Node&gt; adjacentNodes(Hex c)
+      static Node[] endpoints(Edge e)
+      static boolean areAdjacent(Node x, Node y)
+      static boolean areAdjacent(Node x, Edge e)
+    br
+
+
+    a(name='board-api')
+    h3 Board non-static API
+    .api.
+      Resource resourceAt(Hex hex)
+      int numberAt(Hex hex)
+      Harbor harborAt(Node node)
+    | If a given hex is a desert, <code>resourceAt</code> returns null and <code>numberAt</code> returns 0.<br/>
+    | If a given node doesn't contain a harbor, <code>harborAt</code> returns null.<br/>
+    br
+
+
+    a(name='api')
+    h3 Game API
+    | You can use these methods of <code>Game.API</code> object (which is passed to the constructor of your bot class):<br/>
+    .api
+      .togglecmnts
+        a(onclick="toggleCmnts()") [show/hide comments]
+      .cmnt Player object which corresponds to your bot
+      | Player me()
+      .cmnt Single random object, use it to guarantee repetition of events when a random seed is fixed
+      | Random rnd()
+      .cmnt Board object
+      | Board board()
+      .cmnt History object
+      | History history()
+      .cmnt List of all players of the current game
+      | List&lt;Player&gt; players()
+      .cmnt Your deck of resource cards
+      | ResourceDeck cards()
+      .cmnt Your deck of development cards
+      | DevelopmentDeck developments()
+      .cmnt Global deck of resource cards (bank)
+      | ResourceDeck bank()
+      .cmnt Global deck of development cards (only their quantity is available)
+      | int developmentsLeft()
+      | 
+      .cmnt Number of the current turn
+      | int turnNumber()
+      .cmnt Player whose turn is right now
+      | Player turn()
+      | 
+      .cmnt Player who has a road at a given edge, or null, if none has
+      | Player roadAt(Edge e)
+      .cmnt Town which is built at a given node, or null, if none is
+      | Town townAt(Node x)
+      .cmnt Hex where the robber is located
+      | Hex robber()
+      | 
+      .cmnt Roll the dice and return the result (2 to 12)
+      | int rollDice()
+      .cmnt List of players who you can rob, placing the robber on a given hex
+      | List&lt;Player&gt; robbable(Hex hex)
+      .cmnt Move the robber and rob someone (or null, if you can't rob anybody), if you rolled 7
+      | void moveRobber(Hex hex, Player whoToRob)
+      | 
+      .cmnt Check if a node is available for building a settlement (i.e. it's free and its neighbouring nodes are free as well). If mustBeRoad == true, also check if you have at least one of your roads adjacent to it
+      | boolean canBuildSettlementAt(Node x, boolean mustBeRoad)
+      .cmnt Check if you can build a road at a given edge (i.e. it's free and you have a town located at one of its neighbouring nodes)
+      | boolean canBuildRoadAt(Edge e)
+      | 
+      .cmnt Number of remaining settlement pieces you have
+      | int settlementsLeft()
+      .cmnt Number of remaining city pieces you have
+      | int citiesLeft()
+      .cmnt Number of remaining road pieces you have
+      | int roadsLeft()
+      | 
+      .cmnt Build a settlement at a given node
+      | void buildSettlement(Node x)
+      .cmnt Build a city at a given node (your settlement must be already built there)
+      | void buildCity(Node x)
+      .cmnt Build a road at a given edge
+      | void buildRoad(Edge e)
+      | 
+      .cmnt Check if you have a 2:1 harbor of a given resource somewhere
+      | boolean havePort(Resource r)
+      .cmnt Check if you have a 3:1 harbor
+      | boolean havePort3to1()
+      .cmnt Check if a given player has a 2:1 harbor of a given resource
+      | boolean hasPort(Resource r, Player player)
+      .cmnt Check if a given player has a 3:1 harbor
+      | boolean hasPort3to1(Player player)
+      | 
+      .cmnt Check if you can change one set of resources to other using 4:1, 3:1 and 2:1 exchange options
+      | boolean canChange(String sell, String buy)
+      .cmnt Change one set of resources to other
+      | void change(String sell, String buy)
+      | 
+      .cmnt Acquire a given set of resources, maybe exchanging some of your other resources. This method either returns false if it's impossible, or completes the exchange and returns true. A total number of remaining resource cards is maximized in case of several possible exchanges, meaning that all possible 2:1 exchanges are made first to obtain missing resources, then 3:1, then 4:1
+      | boolean getIfPossible(String what)
+      | 
+      .cmnt Draw a development card
+      | void drawDevelopment()
+      .cmnt Use a monopoly development card by declaring a monopoly on a given resource
+      | void monopoly(Resource r)
+      .cmnt Use a road building development card by building two roads at given locations
+      | void roadBuilding(Edge e1, Edge e2)
+      .cmnt Use an invention development card by taking two resources from the bank
+      | void invention(Resource r1, Resource r2)
+      .cmnt Use a knight development card by placing the robber on a given hex and robbing a given player (or null, if you can't rob anybody)
+      | void knight(Hex hex, Player whoToRob)
+      | 
+      .cmnt Player who has the largest army
+      | Player largestArmy()
+      .cmnt Player who has the longest road
+      | Player longestRoad()
+      .cmnt Army strength of a player
+      | int armyStrength(Player player)
+      .cmnt Maximum road length of a player
+      | int roadLength(Player player)
+      .cmnt Maximum road length of a player, assuming he would've built another road at a given edge
+      | int roadLengthWith(Player player, Edge e)
+      .cmnt Public number of points of a player
+      | int points(Player player)
+      | 
+      .cmnt Propose a trade to everyone and get a list of results
+      | List&lt;TradeResult&gt; trade(String sell, String buy)
+      .cmnt Accept someone's trade offer
+      | TradeResult acceptOffer(TradeOffer offer)
+      .cmnt Decline someone's trade offer
+      | TradeResult declineOffer(TradeOffer offer)
+      .cmnt Counteroffer someone's trade offer
+      | TradeResult counterOffer(TradeOffer offer, String sell, String buy)
+    br
+
+
+    a(name='maketurn')
+    h3: code makeTurn
+    | Order of your actions in <code>makeTurn</code> method should correspond to whatever you would do in the board game. First, you can play a knight development card, if you have any. Then you must roll the dice and, if rolled 7, move the robber and rob someone. Then you can build stuff, trade resources or play development cards.<br/>
+    | A typical structure of <code>makeTurn</code> method:<br/>
+    .api.
+      public void makeTurn() {
+        ... // Maybe play a knight
+        if (api.rollDice() == 7) {
+          api.moveRobber(..., ...);
+        }
+        ... // Building, trading
+      }
+    | Please refer to <code>settlers.bot.ExampleBot</code> and <code>settlers.bot.StupidBot</code> as examples of what can be done there.<br/>
+    | Note that if you do something that's not allowed by the rules (e.g. move the robber after rolling 10, roll the dice twice a turn, etc.), a <code>GameException</code> will be thrown with a detailed explanation of what went wrong.<br/>
+    br
+
+
+    //-a(name='trade')
+    //-h3 Trade
+    //-| 
+
+
+    a(name='usage')
+    h3 Testing system usage
+    | An example of running the testing system on a game between 3 example bots:
+    .api.
+      java -jar Settlers.jar -3 Example Example Example
+    | Full list of arguments you can use:
+    ul
+      li <code>-3</code>/<code>-4</code> &mdash; 3 or 4 players in a game; descriptions of players must follow. A description is either <code>Example</code> or <code>Stupid</code> (for built-in bots) or a path to your bot's jarfile, followed by a colon, followed by its full class name. E.g. <code>sample/bin/SampleBot.jar:smartasses.SampleBot</code>
+      li <code>-vis</code> &mdash; enable visualization mode
+      li <code>-seed</code> &mdash; specify a random seed used by <code>Game</code>'s random object to generate a board and everything else; one integer number must follow. If you specify 0, the seed will be chosen at random
+    //-| Log file format:
+    //-ul
+      //-li TODO
+    br
+
+
+  #footer
