@@ -188,108 +188,154 @@
         a(onclick="toggleCmnts()") [show/hide comments]
       .cmnt Player object which corresponds to your bot
       | Player me()
+      br
       .cmnt Single random object, use it to guarantee repetition of events when a random seed is fixed
       | Random rnd()
+      br
       .cmnt Board object
       | Board board()
+      br
       .cmnt History object
       | History history()
+      br
       .cmnt List of all players of the current game
       | List&lt;Player&gt; players()
+      br
       .cmnt Your deck of resource cards
       | ResourceDeck cards()
+      br
       .cmnt Your deck of development cards
       | DevelopmentDeck developments()
+      br
       .cmnt Global deck of resource cards (bank)
       | ResourceDeck bank()
+      br
       .cmnt Global deck of development cards (only their quantity is available)
       | int developmentsLeft()
       | 
+      br
       .cmnt Number of the current turn
       | int turnNumber()
+      br
       .cmnt Player whose turn is right now
       | Player turn()
       | 
+      br
       .cmnt Player who has a road at a given edge, or null, if none has
       | Player roadAt(Edge e)
+      br
       .cmnt Town which is built at a given node, or null, if none is
       | Town townAt(Node x)
+      br
       .cmnt Hex where the robber is located
       | Hex robber()
       | 
+      br
       .cmnt Roll the dice and return the result (2 to 12)
       | int rollDice()
+      br
       .cmnt List of players who you can rob, placing the robber on a given hex
       | List&lt;Player&gt; robbable(Hex hex)
+      br
       .cmnt Move the robber and rob someone (or null, if you can't rob anybody), if you rolled 7
       | void moveRobber(Hex hex, Player whoToRob)
       | 
+      br
       .cmnt Check if a node is available for building a settlement (i.e. it's free and its neighbouring nodes are free as well). If mustBeRoad == true, also check if you have at least one of your roads adjacent to it
       | boolean canBuildSettlementAt(Node x, boolean mustBeRoad)
+      br
       .cmnt Check if you can build a road at a given edge (i.e. it's free and you have a town located at one of its neighbouring nodes)
       | boolean canBuildRoadAt(Edge e)
       | 
+      br
       .cmnt Number of remaining settlement pieces you have
       | int settlementsLeft()
+      br
       .cmnt Number of remaining city pieces you have
       | int citiesLeft()
+      br
       .cmnt Number of remaining road pieces you have
       | int roadsLeft()
       | 
+      br
       .cmnt Build a settlement at a given node
       | void buildSettlement(Node x)
+      br
       .cmnt Build a city at a given node (your settlement must be already built there)
       | void buildCity(Node x)
+      br
       .cmnt Build a road at a given edge
       | void buildRoad(Edge e)
       | 
+      br
       .cmnt Check if you have a 2:1 harbor of a given resource somewhere
       | boolean havePort(Resource r)
+      br
       .cmnt Check if you have a 3:1 harbor
       | boolean havePort3to1()
+      br
       .cmnt Check if a given player has a 2:1 harbor of a given resource
       | boolean hasPort(Resource r, Player player)
+      br
       .cmnt Check if a given player has a 3:1 harbor
       | boolean hasPort3to1(Player player)
       | 
+      br
       .cmnt Check if you can change one set of resources to other using 4:1, 3:1 and 2:1 exchange options
       | boolean canChange(String sell, String buy)
+      br
       .cmnt Change one set of resources to other
       | void change(String sell, String buy)
       | 
+      br
       .cmnt Acquire a given set of resources, maybe exchanging some of your other resources. This method either returns false if it's impossible, or completes the exchange and returns true. A total number of remaining resource cards is maximized in case of several possible exchanges, meaning that all possible 2:1 exchanges are made first to obtain missing resources, then 3:1, then 4:1
       | boolean getIfPossible(String what)
       | 
+      br
       .cmnt Draw a development card
       | void drawDevelopment()
+      br
       .cmnt Use a monopoly development card by declaring a monopoly on a given resource
       | void monopoly(Resource r)
+      br
       .cmnt Use a road building development card by building two roads at given locations
       | void roadBuilding(Edge e1, Edge e2)
+      br
       .cmnt Use an invention development card by taking two resources from the bank
       | void invention(Resource r1, Resource r2)
+      br
       .cmnt Use a knight development card by placing the robber on a given hex and robbing a given player (or null, if you can't rob anybody)
       | void knight(Hex hex, Player whoToRob)
       | 
+      br
       .cmnt Player who has the largest army
       | Player largestArmy()
+      br
       .cmnt Player who has the longest road
       | Player longestRoad()
+      br
       .cmnt Army strength of a player
       | int armyStrength(Player player)
+      br
       .cmnt Maximum road length of a player
       | int roadLength(Player player)
+      br
       .cmnt Maximum road length of a player, assuming he would've built another road at a given edge
       | int roadLengthWith(Player player, Edge e)
+      br
       .cmnt Public number of points of a player
       | int points(Player player)
       | 
+      br
       .cmnt Propose a trade to everyone and get a list of results
       | List&lt;TradeResult&gt; trade(String sell, String buy)
+      br
       .cmnt Accept someone's trade offer
       | TradeResult acceptOffer(TradeOffer offer)
+      br
       .cmnt Decline someone's trade offer
       | TradeResult declineOffer(TradeOffer offer)
+      br
       .cmnt Counteroffer someone's trade offer
       | TradeResult counterOffer(TradeOffer offer, String sell, String buy)
     br
