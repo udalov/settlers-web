@@ -6,6 +6,13 @@ html
     script(src='/javascripts/settlers.js')
     script(src='http://static.ak.fbcdn.net/connect/en_US/core.js')
     script
-      if (window.location.hash == '#_=_') window.location.hash = '';
+      var loc = window.location;
+      if (loc.hash == '#_=_') {
+        if ("replaceState" in history) {
+          history.replaceState('', document.title, loc.pathname + loc.search);
+        } else {
+          loc.hash = '';
+        }
+      }
     link(rel='shortcut icon', href='/settlers.ico')
   body!= body
