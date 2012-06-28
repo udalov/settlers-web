@@ -1,0 +1,19 @@
+#main
+  #header
+    include inc/header
+  #content
+    h2 Login
+    hr
+    br
+    - if (everyauth.loggedIn)
+      | Logged in as <b>#{everyauth.facebook.user.name}</b> [<a href="/logout">logout</a>]
+      br
+    - else
+      #fb-login.fb_button(style='background-position: left -188px')
+        a.fb_button_medium(href='/auth/facebook')
+          span#fb_login_text.fb_button_text
+            | Login with Facebook
+
+  #footer
+
+

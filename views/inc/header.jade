@@ -6,5 +6,10 @@ ul#menu
   //-li: a(href='/submit') Submit
   //-li: a(href='/play') Play
   //-li: a(href='http://github.com/udalov/settlers') Download
+ul#profile
+  - if (everyauth.loggedIn)
+    li: <b>#{everyauth.facebook.user.name}</b> [<a href="/logout">logout</a>]
+  - else
+    li: a(href='/login') Login
 .clear
 
