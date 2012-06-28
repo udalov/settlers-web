@@ -20,12 +20,16 @@ app.configure('production', function(){
 });
 
 
-(function(title) {
-  app.get('/', function(req, res) { res.render('index', { title: title }); });
-  app.get('/docs', function(req, res) { res.render('docs', { title: title }); });
-  app.get('/download', function(req, res) { res.render('download', { title: title }); });
-  // app.get('/submit', function(req, res) { res.render('submit', { title: title }); });
+var route = (function(title) {
+  return function(name) {
+    return function(req, res) { res.render(name, { title: title }); }
+  }
 })('Settlers');
+
+app.get('/', route('index'));
+app.get('/docs', route('docs'));
+app.get('/download', route('download'));
+// app.get('/submit', route('submit'));
 
 
 app.listen(3010, function(){
