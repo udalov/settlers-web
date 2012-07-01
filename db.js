@@ -1,16 +1,20 @@
 var config = require('./config');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var ObjectId = Schema.ObjectId;
 
 mongoose.connect(config.dbLocation);
 
 var Solution = new Schema({
-    data:   String
+    code:   String
+  , jar:    Buffer
 });
 
 var Submission = new Schema({
     date:         { type: Date, default: Date.now }
-  , solutionId:   String
+  , solution:     ObjectId
+  // 0 -- not processed, 1 -- processing, 2 -- ok, 3 -- fail
+  , status:       { type: Number, default: 0, min: 0, max: 2 }
 });
 
 var User = new Schema({

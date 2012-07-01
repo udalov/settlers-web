@@ -82,18 +82,18 @@ app.get('/submit', function(req, res) {
   route('submit')(req, res);
 });
 app.post('/submit', function(req, res) {
-  if (!req.user) return res.redirect('/login');
   req.method = 'get';
+  if (!req.user) return res.redirect('/login');
   res.redirect('/submit');
   if (!req.files || !req.files.file || !req.files.file.size) return;
   var file = req.files.file;
-  fs.readFile(file.path, function(err, data) {
+  fs.readFile(file.path, function(err, code) {
     if (err) throw err;
-    if (!data) return;
-    var solution = new Solution({ data: data });
+    if (!code) return;
+    var solution = new Solution({ code: code });
     solution.save(function(err) {
       if (err) throw err;
-      var submission = new Submission({ solutionId: solution._id });
+      var submission = new Submission({ solution: solution._id });
       submission.save(function(err) {
         if (err) throw err;
         req.user.submissions.push(submission);
