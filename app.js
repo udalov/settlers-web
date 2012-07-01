@@ -10,14 +10,14 @@ everyauth.facebook
   .appSecret(config.appSecret)
   .findOrCreateUser( function(session, accessToken, accessTokenExtra, fbUserMetadata) {
     // TODO
-    return { id: fbUserMetadata.id };
+    return { id: 'fb' + fbUserMetadata.id };
   })
   .redirectPath('/');
 
 everyauth.everymodule
   .findUserById( function(userId, callback) {
     // TODO
-    callback(null, { name: "Batman", id: userId });
+    callback(null, { name: 'Batman', id: userId });
   });
 
 app.configure(function(){
