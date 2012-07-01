@@ -1,6 +1,7 @@
 var config = require('./config');
 var everyauth = require('everyauth');
 var express = require('express');
+var MongoStore = require('connect-mongo')(express);
 
 var app = module.exports = express.createServer();
 
@@ -25,7 +26,11 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
-  app.use(express.session({ secret: "lolcat" }));
+  app.use(express.session({
+    secret: config.sessionSecret,
+    maxAge: new Date(Date.now() + 1e14),
+    store: new MongoStore(config.dbConf)
+  }));
   app.use(express.compiler({ src: __dirname + '/public', enable: ['less'] }));
   app.use(everyauth.middleware());
   app.use(app.router);
