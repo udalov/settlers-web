@@ -5,9 +5,10 @@
     h2 Submit
     hr
     br
-    p= JSON.stringify(everyauth.facebook.user)
-    br
-    | Submit your solution:
+    | Submit your solution (single .java file):
+    form(enctype="multipart/form-data", method="post")
+      input(type="file", name="file")
+      input(type="submit")
     br
 
   #footer

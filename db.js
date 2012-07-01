@@ -5,13 +5,11 @@ var Schema = mongoose.Schema;
 mongoose.connect(config.dbLocation);
 
 var Solution = new Schema({
-    _id:    String
-  , data:   String
+    data:   String
 });
 
 var Submission = new Schema({
-    _id:          String
-  , date:         { type: Date, default: Date.now }
+    date:         { type: Date, default: Date.now }
   , solutionId:   String
 });
 
@@ -26,6 +24,7 @@ User.virtual('id')
   .set(function(id) { this._id = id; });
 
 module.exports = {
+  Solution: mongoose.model('Solution', Solution),
   Submission: mongoose.model('Submission', Submission),
   User: mongoose.model('User', User)
 };
