@@ -52,7 +52,7 @@ var route = (function(title) {
   return function(name) {
     return function(req, res) { res.render(name, { title: title }); }
   }
-})('Settlers');
+})('Settlers Online');
 
 app.get('/', route('index'));
 app.get('/docs', route('docs'));
