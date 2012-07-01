@@ -2,22 +2,38 @@ var config = require('./config');
 var everyauth = require('everyauth');
 var express = require('express');
 var MongoStore = require('connect-mongo')(express);
+var db = require('./db');
 
 var app = module.exports = express.createServer();
+
+var User = db.User;
 
 everyauth.facebook
   .appId(config.appId)
   .appSecret(config.appSecret)
   .findOrCreateUser( function(session, accessToken, accessTokenExtra, fbUserMetadata) {
-    // TODO
-    return { id: 'fb' + fbUserMetadata.id };
+    var id = 'fb' + fbUserMetadata.id;
+    var promise = this.Promise();
+    User.findById(id, function(err, user) {
+      if (user != null)
+        return promise.fulfill(user);
+      var user = new User({
+        _id: id,
+        name: fbUserMetadata.name,
+        submissions: []
+      });
+      user.save(function(err) {
+        if (err) return promise.fail(err);
+        promise.fulfill(user);
+      });
+    });
+    return promise;
   })
   .redirectPath('/');
 
 everyauth.everymodule
-  .findUserById( function(userId, callback) {
-    // TODO
-    callback(null, { name: 'Batman', id: userId });
+  .findUserById( function(id, callback) {
+    User.findById(id, callback);
   });
 
 app.configure(function(){

@@ -6,7 +6,7 @@
     hr
     br
     - if (everyauth.loggedIn)
-      | Logged in as <b>#{everyauth.facebook.user.name}</b> [<a href="/logout">logout</a>]
+      | Logged in as <b>#{user.name}</b> [<a href="/logout">logout</a>]
       br
     - else
       #fb-login.fb_button(style='background-position: left -188px')
