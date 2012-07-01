@@ -13,11 +13,14 @@ body {
   padding: 50px;
   width: 950px;
 
-  a {
-    &:hover {
-      color: #00B7FF;
-    }
+  .link {
+    color: #13C;
     text-decoration: none;
+  }
+  a:link { .link; }
+  a:visited { .link; }
+  a:hover {
+    color: #0BF;
   }
 
   .clear {
