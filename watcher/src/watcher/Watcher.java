@@ -35,13 +35,14 @@ System.out.println("processing " + id);
         assert !cur.hasNext() : "Several solutions correspond to the same submission";
         String filename = solution.get("filename") + "";
         String code = new String((byte[])solution.get("code"));
-        new Thread(new Compiler(filename, code, new Callback() {
-            public void run(Object jar) {
-                if (!(jar instanceof byte[])) {
+        new Thread(new Compiler(filename, code, new Callback<CompilerOutput>() {
+            public void run(CompilerOutput out) {
+                if (out instanceof ErrorOutput) {
 System.out.println("fail " + id);
+System.out.println(((ErrorOutput)out).reason());
                     submission.put("status", 2);
                 } else {
-                    solution.put("jar", jar);
+                    solution.put("jar", ((JarOutput)out).jar);
                     solutions.update(solutionQuery, solution);
 System.out.println("ok " + id);
                     submission.put("status", 3);

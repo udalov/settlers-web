@@ -7,9 +7,9 @@ class Compiler implements Runnable {
 
     private final String filename;
     private final String code;
-    private final Callback callback;
+    private final Callback<CompilerOutput> callback;
 
-    Compiler(String filename, String code, Callback callback) {
+    Compiler(String filename, String code, Callback<CompilerOutput> callback) {
         this.filename = filename;
         this.code = code;
         this.callback = callback;
@@ -47,9 +47,9 @@ System.out.println("running " + cmd);
         return IOUtils.toByteArray(p.getInputStream());
     }
 
-    private Object compile() {
+    private CompilerOutput compile() {
         if (!filename.endsWith(".java") || filename.length() < 6)
-            return "Inappropriate filename";
+            return new OtherErrorOutput("Inappropriate filename");
         String className = filename.substring(0, filename.length() - 5);
         try {
             File dir = File.createTempFile("settlers", System.nanoTime() + "");
@@ -66,20 +66,24 @@ System.out.println("running " + cmd);
             classes.mkdir();
 
             String javac = runProcessGetErrorString("javac -d " + classes.getAbsolutePath() + " " + source.getAbsolutePath());
+            if (javac != null && !javac.isEmpty()) {
+                // TODO: tell apart errors and warnings
+                return new JavacErrorOutput(javac);
+            }
             byte[] bytes = runProcessGetOutputBytes("jar cm " + manifest.getAbsolutePath() + " -C " + classes.getAbsolutePath() + " .");
 
             if (bytes == null || bytes.length == 0)
-                return "Jar produced empty output";
+                return new OtherErrorOutput("Jar produced empty output");
 
-            return bytes;
+            return new JarOutput(bytes, null);
         } catch (IOException e) {
             e.printStackTrace();
-            return "Exception while compiling: " + e.getMessage();
+            return new OtherErrorOutput("Exception while compiling: " + e.getMessage());
         }
     }
 
     public void run() {
-        Object result = null;
+        CompilerOutput result = null;
         try {
             result = compile();
         } finally {

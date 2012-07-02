@@ -1,6 +1,6 @@
 package watcher;
 
-interface Callback {
-    void run(Object o);
+interface Callback<T> {
+    void run(T o);
 }
 
