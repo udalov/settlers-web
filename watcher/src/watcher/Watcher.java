@@ -56,6 +56,7 @@ System.out.println("ok " + id);
     private void run() throws Exception {
         DBObject query = new BasicDBObject();
         query.put("status", 0);
+System.out.println("watching " + db);
         while (true) {
             DBCursor cur = submissions.find(query);
             while (cur.hasNext()) {

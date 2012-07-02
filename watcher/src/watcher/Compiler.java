@@ -65,7 +65,7 @@ System.out.println("running " + cmd);
             File classes = new File(dir, "classes");
             classes.mkdir();
 
-            String javac = runProcessGetErrorString("javac -d " + classes.getAbsolutePath() + " " + source.getAbsolutePath());
+            String javac = runProcessGetErrorString("javac -cp .:../public/Settlers.jar -d " + classes.getAbsolutePath() + " " + source.getAbsolutePath());
             if (javac != null && !javac.isEmpty()) {
                 // TODO: tell apart errors and warnings
                 return new JavacErrorOutput(javac);
