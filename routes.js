@@ -14,6 +14,7 @@ var route = function(name) {
   return function(req, res) { res.render(name, { title: title }); }
 };
 
+// TODO: handle errors carefully
 app.get('/', route('index'));
 app.get('/docs', route('docs'));
 app.get('/download', route('download'));
@@ -25,6 +26,21 @@ app.get('/submit', function(req, res) {
       title: title,
       submissions: submissions.reverse(),
       strftime: strftime
+    });
+  });
+});
+
+app.get('/submission/:id', function(req, res) {
+  if (!req.user) return res.redirect('/login');
+  Submission.findById(req.params.id, function(err, submission) {
+    if (err) throw err;
+    if (!submission || submission.author != req.user.id)
+      // TODO: show error to user
+      return res.redirect('/submit');
+    Solution.findById(submission.solution, function(err, solution) {
+      if (err) throw err;
+      res.header('Content-Type', 'text/plain');
+      res.send(solution.code);
     });
   });
 });
