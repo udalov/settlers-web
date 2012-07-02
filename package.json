@@ -9,5 +9,6 @@
     , "everyauth": ">= 0.2.32"
     , "connect-mongo": ">= 0.1.9"
     , "mongoose": ">= 2.7.1"
+    , "prettydate": ">= 0.0.1"
   }
 }

@@ -4,6 +4,7 @@ var everyauth = require('everyauth');
 var express = require('express');
 var MongoStore = require('connect-mongo')(express);
 var db = require('./db');
+var strftime = require('prettydate').strftime;
 
 var app = module.exports = express.createServer();
 
@@ -79,7 +80,11 @@ app.get('/login', route('login'));
 app.get('/submit', function(req, res) {
   if (!req.user) return res.redirect('/login');
   Submission.find({ author: req.user.id }, function(err, submissions) {
-    res.render('submit', { title: title, submissions: submissions });
+    res.render('submit', {
+      title: title,
+      submissions: submissions.reverse(),
+      strftime: strftime
+    });
   });
 });
 app.post('/submit', function(req, res) {

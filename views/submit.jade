@@ -20,7 +20,7 @@
         th Output
       for submission in submissions
         tr
-          td #{submission.date}
+          td #{strftime(submission.date, "%d.%m.%g %H:%M:%S")}
           td: a(href="/submission/" + submission._id) view
           if (submission.status == 1)
             td.compiling compiling...
