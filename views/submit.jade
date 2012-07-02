@@ -15,12 +15,10 @@
     table#submissions
       tr
         th Time
-        th Source
         th Status
       for submission in submissions
         tr
-          td #{strftime(submission.date, "%d.%m.%g %H:%M:%S")}
-          td: a(href="/submission/" + submission._id) view
+          td: a(href="/submission/" + submission._id) #{strftime(submission.date, "%d.%m.%g %H:%M:%S")}
           if (submission.status == 1)
             td.compiling compiling...
           else if (submission.status == 2)
