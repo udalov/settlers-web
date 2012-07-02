@@ -33,18 +33,18 @@ System.out.println("processing " + id);
             throw new IllegalStateException("Solution " + submission.get("solution") + " corresponding to submission " + id + " is not found");
         final DBObject solution = cur.next();
         assert !cur.hasNext() : "Several solutions correspond to the same submission";
-        String code = solution.get("code") + "";
+        String code = new String((byte[])solution.get("code"));
         new Thread(new Compiler(code, new Callback() {
             public void run(Object jar) {
                 if (jar == null) {
 System.out.println("fail " + id);
-                    submission.put("status", 3);
+                    submission.put("status", 2);
                     submissions.update(submissionQuery, submission);
                     return;
                 }
                 solution.put("jar", jar);
                 solutions.update(solutionQuery, solution);
-                submission.put("status", 2);
+                submission.put("status", 3);
                 submissions.update(submissionQuery, submission);
 System.out.println("ok " + id);
             }

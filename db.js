@@ -6,21 +6,21 @@ var ObjectId = Schema.ObjectId;
 mongoose.connect(config.dbLocation);
 
 var Solution = new Schema({
-    code:   String
-  , jar:    Buffer
+    code:         Buffer
+  , jar:          Buffer
 });
 
 var Submission = new Schema({
     date:         { type: Date, default: Date.now }
   , solution:     ObjectId
-  // 0 -- not processed, 1 -- processing, 2 -- ok, 3 -- fail
-  , status:       { type: Number, default: 0, min: 0, max: 2 }
+  , author:       String
+  // 0 -- not processed, 1 -- processing, 2 -- fail, 3 -- ok
+  , status:       { type: Number, default: 0, min: 0, max: 3 }
 });
 
 var User = new Schema({
     _id:          String
   , name:         String
-  , submissions:  [Submission]
 });
 
 User.virtual('id')

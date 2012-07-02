@@ -23,7 +23,6 @@ everyauth.facebook
       var user = new User({
         _id: id,
         name: fbUserMetadata.name,
-        submissions: []
       });
       user.save(function(err) {
         if (err) return promise.fail(err);
@@ -90,16 +89,15 @@ app.post('/submit', function(req, res) {
   fs.readFile(file.path, function(err, code) {
     if (err) throw err;
     if (!code) return;
-    var solution = new Solution({ code: code });
+    var solution = new Solution({ code: new Buffer(code) });
     solution.save(function(err) {
       if (err) throw err;
-      var submission = new Submission({ solution: solution._id });
+      var submission = new Submission({
+        author: req.user._id,
+        solution: solution._id
+      });
       submission.save(function(err) {
         if (err) throw err;
-        req.user.submissions.push(submission);
-        req.user.save(function(err) {
-          if (err) throw err;
-        });
       });
     });
   });
