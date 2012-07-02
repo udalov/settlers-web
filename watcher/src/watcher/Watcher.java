@@ -37,7 +37,7 @@ System.out.println("processing " + id);
         String code = new String((byte[])solution.get("code"));
         new Thread(new Compiler(filename, code, new Callback() {
             public void run(Object jar) {
-                if (jar == null) {
+                if (!(jar instanceof byte[])) {
 System.out.println("fail " + id);
                     submission.put("status", 2);
                 } else {
