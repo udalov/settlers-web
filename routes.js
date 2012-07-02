@@ -30,7 +30,7 @@ app.get('/submit', function(req, res) {
   });
 });
 
-app.get('/submission/:id', function(req, res) {
+var doWithSolution = function(callback) { return function(req, res) {
   if (!req.user) return res.redirect('/login');
   Submission.findById(req.params.id, function(err, submission) {
     if (err) throw err;
@@ -40,10 +40,13 @@ app.get('/submission/:id', function(req, res) {
     Solution.findById(submission.solution, function(err, solution) {
       if (err) throw err;
       res.header('Content-Type', 'text/plain');
-      res.send(solution.code);
+      res.send(callback(solution));
     });
   });
-});
+}; };
+
+app.get('/submission/:id', doWithSolution(function(solution) { return solution.code; }));
+app.get('/compilation-error/:id', doWithSolution(function(solution) { return solution.error; }));
 
 app.post('/submit', function(req, res) {
   req.method = 'get';
