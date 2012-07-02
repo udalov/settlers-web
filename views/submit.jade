@@ -17,7 +17,6 @@
         th Time
         th Source
         th Status
-        th Errors
       for submission in submissions
         tr
           td #{strftime(submission.date, "%d.%m.%g %H:%M:%S")}
@@ -25,14 +24,13 @@
           if (submission.status == 1)
             td.compiling compiling...
           else if (submission.status == 2)
-            td.error error
+            td.error
+              | error&nbsp;
+              a(href="/compilation-error/" + submission._id) (?)
           else if (submission.status == 3)
             td.ok ok
           else
             td.waiting waiting
-          td
-            if (submission.status == 2)
-              a(href="/compilation-error/" + submission._id) view
     br
 
   #footer
