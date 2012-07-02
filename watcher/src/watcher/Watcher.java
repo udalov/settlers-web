@@ -41,7 +41,6 @@ System.out.println("processing " + id);
                     String reason = ((ErrorOutput)out).reason();
                     solution.put("error", reason);
 System.out.println("fail " + id);
-System.out.println(reason);
                     submission.put("status", 2);
                 } else {
                     solution.put("jar", ((JarOutput)out).jar);
