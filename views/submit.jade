@@ -10,6 +10,30 @@
       input(type="file", name="file")
       input(type="submit")
     br
+    | Submissions:
+    br
+    table#submissions
+      tr
+        th Time
+        th Source
+        th Status
+        th Output
+      for submission in submissions
+        tr
+          td #{submission.date}
+          td: a(href="/submission/" + submission._id) view
+          if (submission.status == 1)
+            td.compiling compiling...
+          else if (submission.status == 2)
+            td.error error
+          else if (submission.status == 3)
+            td.ok ok
+          else
+            td.waiting waiting
+          td
+            if (submission.status == 2)
+              a(href="/compiler-output/" + submission.solution) view
+    br
 
   #footer
 

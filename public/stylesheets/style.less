@@ -6,6 +6,12 @@
   -moz-box-shadow:    @val;
 }
 
+.any-table {
+  border: 1px solid #ccc;
+  margin: 1em;
+  td { padding: 2px 1em 2px 1ex; }
+}
+
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   background: url('/images/cardboard.png');
@@ -58,10 +64,8 @@ body {
       line-height: 1.5;
 
       .classes-table {
-        border: 1px solid #ccc;
-        margin: 1em;
+        .any-table;
         tr:nth-child(odd) { background-color: #f3f3ff; }
-        td { padding: 2px 1em 2px 1ex; }
       }
 
       .contents {
@@ -96,6 +100,17 @@ body {
           color: #77f;
           display: none;
           word-wrap: break-word;
+        }
+      }
+
+      #submissions {
+        .any-table;
+        tr:nth-child(odd) { background-color: #f5f5ff; }
+        tr td,th {
+          text-align: center;
+          &.compiling { color: #33f; }
+          &.error { color: #f33; }
+          &.ok { color: #3a3; }
         }
       }
     }
