@@ -1,3 +1,5 @@
+package watcher;
+
 import java.io.*;
 
 class Compiler implements Runnable {

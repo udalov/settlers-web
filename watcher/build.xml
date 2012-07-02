@@ -1,0 +1,36 @@
+<project name="Watcher" default="dist">
+
+    <property name="mongo" value="mongo-2.7.3.jar"/>
+
+    <target name="update-dependencies">
+        <mkdir dir="lib"/>
+        <get src="http://cloud.github.com/downloads/mongodb/mongo-java-driver/${mongo}" dest="lib/${mongo}"/>
+    </target>
+
+    <target name="init">
+        <mkdir dir="build"/>
+        <mkdir dir="bin"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <javac srcdir="src" classpath=".:lib/${mongo}" destdir="build" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
+    </target>
+
+    <target name="dist" depends="clean,compile">
+        <jar jarfile="bin/Watcher.jar" basedir="build">
+            <manifest>
+                <attribute name="Main-Class" value="watcher.Watcher"/>
+                <attribute name="Class-Path" value="../lib/${mongo}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="clean">
+        <delete dir="build"/>
+        <delete dir="bin"/>
+    </target>
+    
+</project>
+

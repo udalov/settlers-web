@@ -1,3 +1,5 @@
+package watcher;
+
 import com.mongodb.*;
 import java.io.*;
 import java.util.*;

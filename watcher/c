@@ -1,6 +1,0 @@
-#!/bin/bash
-
-rm -rf classes
-mkdir classes
-javac -cp mongo-2.7.3.jar -d classes *.java
-

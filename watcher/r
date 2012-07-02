@@ -1,4 +1,4 @@
 #!/bin/bash
 
-java -cp classes:mongo-2.7.3.jar Watcher
+java -jar bin/Watcher.jar
 
