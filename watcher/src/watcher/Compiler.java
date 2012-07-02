@@ -15,32 +15,55 @@ class Compiler implements Runnable {
         this.callback = callback;
     }
 
-    private byte[] runProcess(String cmd) throws Exception {
+    private void writeToFile(File f, String s) throws IOException {
+        FileWriter w = new FileWriter(f);
+        try {
+            IOUtils.write(s, w);
+        } finally {
+            w.close();
+        }
+    }
+
+    private byte[] runProcess(String cmd) throws IOException {
+System.out.println("running " + cmd);
         Process p = Runtime.getRuntime().exec(cmd);
-        p.waitFor();
+        try {
+            p.waitFor();
+        } catch (InterruptedException ie) {
+            return null;
+        }
         InputStream is = p.getInputStream();
         return IOUtils.toByteArray(is);
     }
 
     public void run() {
         // TODO: error messages
-        Object jar = null;
+        Object result = null;
         try {
+            if (!filename.endsWith(".java") || filename.length() < 6)
+                return;
+            String className = filename.substring(0, filename.length() - 5);
             try {
                 File dir = File.createTempFile("settlers", System.nanoTime() + "");
                 dir.delete();
                 dir.mkdir();
+
+                File manifest = new File(dir, "MANIFEST.MF");
+                writeToFile(manifest, "Main-Class: " + className + "\n");
+                
                 File source = new File(dir, filename);
-                IOUtils.write(code, new FileWriter(source));
+                writeToFile(source, code);
+
                 File classes = new File(dir, "classes");
                 classes.mkdir();
-                runProcess("javac -d " + classes.getAbsolutePath() + " " + filename);
-                jar = runProcess("jar c " + classes.getAbsolutePath());
-            } catch (Exception e) {
+
+                runProcess("javac -d " + classes.getAbsolutePath() + " " + source.getAbsolutePath());
+                result = runProcess("jar cm " + manifest.getAbsolutePath() + " -C " + classes.getAbsolutePath() + " .");
+            } catch (IOException e) {
                 return;
             }
         } finally {
-            callback.run(jar);
+            callback.run(result);
         }
     }
 }
