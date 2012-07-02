@@ -38,15 +38,17 @@ System.out.println("processing " + id);
         new Thread(new Compiler(filename, code, new Callback<CompilerOutput>() {
             public void run(CompilerOutput out) {
                 if (out instanceof ErrorOutput) {
+                    String reason = ((ErrorOutput)out).reason();
+                    solution.put("error", reason);
 System.out.println("fail " + id);
-System.out.println(((ErrorOutput)out).reason());
+System.out.println(reason);
                     submission.put("status", 2);
                 } else {
                     solution.put("jar", ((JarOutput)out).jar);
-                    solutions.update(solutionQuery, solution);
 System.out.println("ok " + id);
                     submission.put("status", 3);
                 }
+                solutions.update(solutionQuery, solution);
                 submissions.update(submissionQuery, submission);
             }
         })).start();

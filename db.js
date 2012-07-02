@@ -9,6 +9,7 @@ var Solution = new Schema({
     filename:     String
   , code:         Buffer
   , jar:          Buffer
+  , error:        String
 });
 
 var Submission = new Schema({
