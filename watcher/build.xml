@@ -1,10 +1,16 @@
 <project name="Watcher" default="dist">
 
     <property name="mongo" value="mongo-2.7.3.jar"/>
+    <property name="commons-io" value="commons-io-2.4"/>
 
     <target name="update-dependencies">
         <mkdir dir="lib"/>
         <get src="http://cloud.github.com/downloads/mongodb/mongo-java-driver/${mongo}" dest="lib/${mongo}"/>
+        <get src="http://www.sai.msu.su/apache/commons/io/binaries/${commons-io}-bin.zip" dest="lib/${commons-io}-bin.zip"/>
+        <unzip src="lib/${commons-io}-bin.zip" dest="lib/"/>
+        <move file="lib/${commons-io}/${commons-io}.jar" tofile="lib/${commons-io}.jar"/>
+        <delete file="lib/${commons-io}-bin.zip"/>
+        <delete dir="lib/${commons-io}"/>
     </target>
 
     <target name="init">
@@ -13,7 +19,7 @@
     </target>
 
     <target name="compile" depends="init">
-        <javac srcdir="src" classpath=".:lib/${mongo}" destdir="build" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
+        <javac srcdir="src" classpath=".:lib/${mongo}:lib/${commons-io}.jar" destdir="build" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
             <compilerarg value="-Xlint:unchecked"/>
         </javac>
     </target>
@@ -22,7 +28,7 @@
         <jar jarfile="bin/Watcher.jar" basedir="build">
             <manifest>
                 <attribute name="Main-Class" value="watcher.Watcher"/>
-                <attribute name="Class-Path" value="../lib/${mongo}"/>
+                <attribute name="Class-Path" value="../lib/${mongo} ../lib/${commons-io}.jar"/>
             </manifest>
         </jar>
     </target>

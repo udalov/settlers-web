@@ -40,14 +40,13 @@ System.out.println("processing " + id);
                 if (jar == null) {
 System.out.println("fail " + id);
                     submission.put("status", 2);
-                    submissions.update(submissionQuery, submission);
-                    return;
-                }
-                solution.put("jar", jar);
-                solutions.update(solutionQuery, solution);
-                submission.put("status", 3);
-                submissions.update(submissionQuery, submission);
+                } else {
+                    solution.put("jar", jar);
+                    solutions.update(solutionQuery, solution);
 System.out.println("ok " + id);
+                    submission.put("status", 3);
+                }
+                submissions.update(submissionQuery, submission);
             }
         })).start();
     }

@@ -1,6 +1,7 @@
 package watcher;
 
 import java.io.*;
+import org.apache.commons.io.IOUtils;
 
 class Compiler implements Runnable {
 
@@ -14,23 +15,11 @@ class Compiler implements Runnable {
         this.callback = callback;
     }
 
-    private void write(File f, String s) throws IOException {
-        PrintWriter writer = new PrintWriter(f);
-        writer.print(s);
-        writer.flush();
-        writer.close();
-    }
-
     private byte[] runProcess(String cmd) throws Exception {
         Process p = Runtime.getRuntime().exec(cmd);
         p.waitFor();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int r;
-        while ((r = reader.read()) != -1) {
-            out.write(r);
-        }
-        return out.toByteArray();
+        InputStream is = p.getInputStream();
+        return IOUtils.toByteArray(is);
     }
 
     public void run() {
@@ -42,7 +31,7 @@ class Compiler implements Runnable {
                 dir.delete();
                 dir.mkdir();
                 File source = new File(dir, filename);
-                write(source, code);
+                IOUtils.write(code, new FileWriter(source));
                 File classes = new File(dir, "classes");
                 classes.mkdir();
                 runProcess("javac -d " + classes.getAbsolutePath() + " " + filename);
