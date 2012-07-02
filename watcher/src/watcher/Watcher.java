@@ -37,8 +37,8 @@ System.out.println("processing " + id);
         String code = new String((byte[])solution.get("code"));
         new Thread(new Compiler(filename, code, new Callback<CompilerOutput>() {
             public void run(CompilerOutput out) {
-                if (out instanceof ErrorOutput) {
-                    String reason = ((ErrorOutput)out).reason();
+                if (!(out instanceof JarOutput)) {
+                    String reason = out == null ? "Unknown error" : ((ErrorOutput)out).reason();
                     solution.put("error", reason);
 System.out.println("fail " + id);
                     submission.put("status", 2);
