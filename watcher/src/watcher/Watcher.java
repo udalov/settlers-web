@@ -33,8 +33,9 @@ System.out.println("processing " + id);
             throw new IllegalStateException("Solution " + submission.get("solution") + " corresponding to submission " + id + " is not found");
         final DBObject solution = cur.next();
         assert !cur.hasNext() : "Several solutions correspond to the same submission";
+        String filename = solution.get("filename") + "";
         String code = new String((byte[])solution.get("code"));
-        new Thread(new Compiler(code, new Callback() {
+        new Thread(new Compiler(filename, code, new Callback() {
             public void run(Object jar) {
                 if (jar == null) {
 System.out.println("fail " + id);

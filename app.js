@@ -89,7 +89,10 @@ app.post('/submit', function(req, res) {
   fs.readFile(file.path, function(err, code) {
     if (err) throw err;
     if (!code) return;
-    var solution = new Solution({ code: new Buffer(code) });
+    var solution = new Solution({
+      filename: file.name,
+      code: new Buffer(code)
+    });
     solution.save(function(err) {
       if (err) throw err;
       var submission = new Submission({

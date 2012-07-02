@@ -4,31 +4,14 @@ import java.io.*;
 
 class Compiler implements Runnable {
 
+    private final String filename;
     private final String code;
     private final Callback callback;
 
-    Compiler(String code, Callback callback) {
+    Compiler(String filename, String code, Callback callback) {
+        this.filename = filename;
         this.code = code;
         this.callback = callback;
-    }
-
-    private boolean isAlphanum(char c) {
-        return 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' || '0' <= c && c <= '9' || c == '_' || c == '$';
-    }
-
-    private String deduceClassName() {
-        // TODO: regex, efficiency, xss
-        String[] lines = code.split("\n");
-        for (String line : lines) {
-            if (line.startsWith("public class ")) {
-                String s = line.substring(13);
-                int i = 0;
-                while (i < s.length() && isAlphanum(s.charAt(i)))
-                    i++;
-                return s.substring(0, i);
-            }
-        }
-        return null;
     }
 
     private void write(File f, String s) throws IOException {
@@ -54,10 +37,6 @@ class Compiler implements Runnable {
         // TODO: error messages
         Object jar = null;
         try {
-            String className = deduceClassName();
-            if (className == null)
-                return;
-            String filename = className + ".java";
             try {
                 File dir = File.createTempFile("settlers", System.nanoTime() + "");
                 dir.delete();

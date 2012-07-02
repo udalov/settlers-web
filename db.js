@@ -6,7 +6,8 @@ var ObjectId = Schema.ObjectId;
 mongoose.connect(config.dbLocation);
 
 var Solution = new Schema({
-    code:         Buffer
+    filename:     String
+  , code:         Buffer
   , jar:          Buffer
 });
 
