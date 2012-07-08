@@ -17,11 +17,21 @@ var route = function(name) {
 // TODO: handle errors carefully
 app.get('/', route('index'));
 app.get('/docs', route('docs'));
-app.get('/download', route('download'));
+app.get('/download', function(req, res) {
+  fs.stat('public/Settlers.jar', function(err, stats) {
+    if (err) throw err;
+    res.render('download', {
+      title: title,
+      mtime: stats.mtime,
+      strftime: strftime
+    });
+  });
+});
 app.get('/login', route('login'));
 app.get('/submit', function(req, res) {
   if (!req.user) return res.redirect('/login');
   Submission.find({ author: req.user.id }, function(err, submissions) {
+    if (err) throw err;
     res.render('submit', {
       title: title,
       submissions: submissions.reverse(),
