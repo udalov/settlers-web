@@ -49,7 +49,7 @@ System.out.println("running " + cmd);
 
     private CompilerOutput compile() {
         if (!filename.endsWith(".java") || filename.length() < 6)
-            return new OtherErrorOutput("Inappropriate filename");
+            return new OtherErrorOutput("Inappropriate filename: " + filename);
         String className = filename.substring(0, filename.length() - 5);
         try {
             File dir = File.createTempFile("settlers", System.nanoTime() + "");
