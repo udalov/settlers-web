@@ -4,9 +4,9 @@ ul#menu
   li: a(href='/') Home
   li: a(href='/docs') Documentation
   li: a(href='/download') Download
-  //-li: a(href='/submit') Submit
+  - if (everyauth.loggedIn)
+    li: a(href='/submit') Submit
   //-li: a(href='/play') Play
-  //-li: a(href='http://github.com/udalov/settlers') Download
 ul#profile
   - if (everyauth.loggedIn)
     li: <b>#{user.name}</b> [<a href="/logout">logout</a>]
